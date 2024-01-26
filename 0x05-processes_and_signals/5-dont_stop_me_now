@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# This script stops the 4-to_infinity_and_beyond process
+
+process_ids=$(pgrep -f "4-to_infinity_and_beyond")
+
+if [ -n "$process_ids" ]; then
+    
+    kill "$process_ids"
+else
+    echo "No matching processes found."
+fi
