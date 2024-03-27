@@ -3,24 +3,16 @@
 sudo apt-get update -y
 sudo apt-get install nginx -y
 
-sudo systemctl status nginx
-
 if ! dpkg -l | grep -q nginx; then
     echo "Failed to install nginx."
     exit 1
 fi
 
-sed -i 's/listen\s*80;/listen 80;/g' /etc/nginx/sites-available/default
+sudo sed -i 's/listen\s*80;/listen 80;/g' /etc/nginx/sites-available/default
 
-service nginx restart > /dev/null 2>&1 || /etc/init.d/nginx restart > /dev/null 2>&1
-
-if ! pgrep -x nginx > /dev/null; then
-    echo "Failed to start nginx."
-    exit 1
-fi
+sudo service nginx restart > /dev/null 2>&1 || /etc/init.d/nginx restart > /dev/null 2>&1
 
 echo "Hello World!" > /usr/share/nginx/html/index.html
-
 if ! curl -s localhost | grep -q "Hello World!"; then
     echo "Failed to verify nginx root page."
     exit 1
