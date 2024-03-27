@@ -1,35 +1,37 @@
-#!/usr/bin/env bash
+onfigures a new Ubuntu machine by installing Nginx
+# and setting it up to serve a Hello World page on port 80,
+# configure a redirection to a YouTube video, and set up a custom 404 page.
 
-#Install Nginx
-sudo apt-get update -y -qq && sudo apt-get install nginx -y
+# Update package repositories and install Nginx
+echo "Updating and installing Nginx..."
+sudo apt-get update -y -qq && \
+sudo apt-get install nginx -y
 
-# Configure Nginx to have a custom 404 page
-sudo bash -c 'cat <<EOF > /etc/nginx/sites-available/default
-server {
-    listen 80 default_server;
-    listen [::]:80 default_server;
+# Start Nginx service
+echo "Starting Nginx service..."
+sudo service nginx start
 
-    root /var/www/html;
-    index index.html index.htm;
+echo "Allowing Nginx on firewall..."
+sudo ufw allow 'Nginx HTTP'
 
-    server_name _;
+echo "Setting ownership and permissions for website files..."
+sudo chown -R "$USER":"$USER" /var/www/html
+sudo chmod -R 755 /var/www
 
-    location / {
-        try_files \$uri \$uri/ =404;
-    }
+echo "Backing up default index file..."
+cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
 
-    error_page 404 /404.html;
-    location = /404.html {
-        root /var/www/html;
-        internal;
-    }
-}
-EOF'
+echo "Creating new index file with Hello World content..."
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
 
-# Create the custom 404 page
-sudo bash -c 'echo "Ceci n'est pas une page" > /var/www/html/404.html'
+echo "Setting up redirection to a YouTube video..."
+sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
 
-# Restart Nginx
+echo "Setting up custom 404 page..."
+echo "Ceci n'est pas une page" >> /var/www/html/error_404.html
+sudo sed -i '25i\	error_page 404 /error_404.html;' /etc/nginx/sites-available/default
+
+echo "Restarting Nginx service..."
 sudo service nginx restart
 
-echo "Configuration completed."
+echo "Configuration completed successfully."
