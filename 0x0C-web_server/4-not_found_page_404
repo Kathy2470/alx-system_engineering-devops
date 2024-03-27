@@ -1,27 +1,35 @@
 #!/usr/bin/env bash
-echo -e "Updating and installing Nginx.\n"
-sudo apt-get update -y -qq && \
-         sudo apt-get install nginx -y
 
-echo -e "\nSetting up Nginx.\n"
+#Install Nginx
+sudo apt-get update -y -qq && sudo apt-get install nginx -y
 
-sudo service nginx start
+# Configure Nginx to have a custom 404 page
+sudo bash -c 'cat <<EOF > /etc/nginx/sites-available/default
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
 
-sudo ufw allow 'Nginx HTTP'
+    root /var/www/html;
+    index index.html index.htm;
 
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
+    server_name _;
 
-sudo cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
+    location / {
+        try_files \$uri \$uri/ =404;
+    }
 
-echo -e "Hello World!" > /var/www/html/index.nginx-debian.html
+    error_page 404 /404.html;
+    location = /404.html {
+        root /var/www/html;
+        internal;
+    }
+}
+EOF'
 
-sudo sed -i '/server_name _;/a \       rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+# Create the custom 404 page
+sudo bash -c 'echo "Ceci n'est pas une page" > /var/www/html/404.html'
 
-sudo echo "Ceci n'est pas une page" > /var/www/html/error_404.html
-sudo sed -i '25i\       error_page 404 /error_404.html;' /etc/nginx/sites-available/default
-sudo sed -i '26i\       location = /error_404.html { \n               root /var/www/html; \n               internal; \n       }' /etc/nginx/sites-available/default
-
+# Restart Nginx
 sudo service nginx restart
 
-echo -e "\nCompleted.\n"
+echo "Configuration completed."
