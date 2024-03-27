@@ -1,4 +1,5 @@
-onfigures a new Ubuntu machine by installing Nginx
+#!/usr/bin/env bash
+# Configures a new Ubuntu machine by installing Nginx
 # and setting it up to serve a Hello World page on port 80,
 # configure a redirection to a YouTube video, and set up a custom 404 page.
 
