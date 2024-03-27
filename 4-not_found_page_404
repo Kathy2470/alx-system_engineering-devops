@@ -1,45 +1,25 @@
 #!/usr/bin/env bash
-# Configures a new Ubuntu machine by installing Nginx
-# and setting it up to serve a Hello World page on port 80,
-# configure a redirection to a YouTube video, and set up a custom 404 page.
 
-# Update package repositories and install Nginx
-echo "Updating and installing Nginx..."
-sudo apt-get update -y -qq && \
-sudo apt-get install nginx -y
+# Install Nginx
+package { 'nginx':
+  ensure => 'installed',
+}
 
-# Start Nginx service
-echo "Starting Nginx service..."
-sudo service nginx start
+# Configure custom 404 page
+file { '/var/www/html/error_404.html':
+  ensure  => 'present',
+  content => "Ceci n'est pas une page\n",
+}
 
-# Allow Nginx through the firewall
-echo "Allowing Nginx on firewall..."
-sudo ufw allow 'Nginx HTTP'
+file { '/etc/nginx/sites-available/default':
+  ensure  => 'present',
+  content => template('nginx/default.erb'),
+  require => File['/var/www/html/error_404.html'],
+}
 
-# Give ownership of website files to the current user for easy editing
-echo "Setting ownership and permissions for website files..."
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
-
-# Backup default index
-echo "Backing up default index file..."
-cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
-
-# Create a new index file with Hello World content
-echo "Creating new index file with Hello World content..."
-echo "Hello World!" > /var/www/html/index.nginx-debian.html
-
-# Set up redirection to a YouTube video
-echo "Setting up redirection to a YouTube video..."
-sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
-
-# Set up a custom 404 page
-echo "Setting up custom 404 page..."
-echo "Ceci n'est pas une page" >> /var/www/html/error_404.html
-sudo sed -i '25i\	error_page 404 /error_404.html;' /etc/nginx/sites-available/default
-
-# Restart Nginx to apply changes
-echo "Restarting Nginx service..."
-sudo service nginx restart
-
-echo "Configuration completed successfully."
+# Restart Nginx service
+service { 'nginx':
+  ensure    => 'running',
+  enable    => true,
+  subscribe => File['/etc/nginx/sites-available/default'],
+}
