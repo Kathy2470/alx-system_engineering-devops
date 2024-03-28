@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 #This script takes a URL and displays all HTTP methods the server will accept
 
 # Sending an OPTIONS request to the provided URL and displaying the allowed HTTP methods
