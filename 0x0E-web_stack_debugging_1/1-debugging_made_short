@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#update package lists
+apt update
+
+# Install nginx
+apt install -y nginx
+
+# Stop nginx service
+service nginx stop
+
+# Start nginx service
+service nginx start
