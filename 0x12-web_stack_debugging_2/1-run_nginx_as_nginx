@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+# Modify Nginx configuration to run as nginx user
+sudo sed -i 's/^user .*;$/user nginx;/' /etc/nginx/nginx.conf
+
+# Adjust ownership of relevant directories and files to nginx user
+sudo chown -R nginx:nginx /var/www/html /etc/nginx
+
+# Restart Nginx
+sudo service nginx restart
+
+# Check if Nginx is running as nginx user
+ps auxff | grep 'ngin[x]'
+
+# Check if Nginx is listening on port 8080
+nc -z 0 8080 && echo "Nginx is listening on port 8080"
