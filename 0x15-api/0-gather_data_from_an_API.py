@@ -7,6 +7,7 @@ returns information about his/her TODO list progress.
 import sys
 import requests
 
+
 def get_todo_list_progress(employee_id):
     url_user = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
     url_todos = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
@@ -28,6 +29,7 @@ def get_todo_list_progress(employee_id):
     except requests.exceptions.RequestException as e:
         print(f"Error fetching data: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2 or not sys.argv[1].isdigit():
