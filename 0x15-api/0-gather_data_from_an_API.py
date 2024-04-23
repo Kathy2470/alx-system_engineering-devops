@@ -1,40 +1,24 @@
 #!/usr/bin/python3
 """
-Python script that, using a given REST API, for a given employee ID,
-returns information about his/her TODO list progress.
+Retrieves to-do list information for a given employee ID.
+
+This script accepts an employee ID as a command-line argument and fetches
+the corresponding user information and to-do list from the JSONPlaceholder API.
+It then prints the tasks completed by the employee.
 """
 
-import sys
 import requests
-
-
-def get_todo_list_progress(employee_id):
-    url_user = f'https://jsonplaceholder.typicode.com/users/{employee_id}'
-    url_todos = f'https://jsonplaceholder.typicode.com/todos?userId={employee_id}'
-
-    try:
-        response_user = requests.get(url_user)
-        response_todos = requests.get(url_todos)
-
-        user_data = response_user.json()
-        todos_data = response_todos.json()
-
-        total_tasks = len(todos_data)
-        completed_tasks = [task for task in todos_data if task['completed']]
-
-        print(f"Employee {user_data['name']} is done with tasks"
-              f"({len(completed_tasks)}/{total_tasks}):")
-        for task in completed_tasks:
-            print(f"\t {task['title']}")
-    except requests.exceptions.RequestException as e:
-        print(f"Error fetching data: {e}")
-        sys.exit(1)
+import sys
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2 or not sys.argv[1].isdigit():
-        print("Usage: {} employee_id".format(sys.argv[0]))
-        sys.exit(1)
-
-    employee_id = int(sys.argv[1])
-    get_todo_list_progress(employee_id)
+    base_url = "https://jsonplaceholder.typicode.com/"
+    employee_id = sys.argv[1]
+    user_info = requests.get(base_url + "users/{}".format(employee_id)).json()
+    params = {"userId": employee_id}
+    todo_list = requests.get(base_url + "todos", params=params).json()
+    completed_tasks = [task.get("title") for task in todo_list if task.get("completed")]
+    print("Employee {} is done with tasks({}/{}):".format(
+        user_info.get("name"), len(completed_tasks), len(todo_list)))
+    for task_title in completed_tasks:
+        print("\t{}".format(task_title))
