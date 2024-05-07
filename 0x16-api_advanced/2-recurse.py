@@ -5,6 +5,7 @@ Script to query a list of all hot posts on a given Reddit subreddit.
 
 import requests
 
+
 def recurse(subreddit, hot_list=[], after="", count=0):
     """
     Recursively retrieves a list of titles of all hot posts
