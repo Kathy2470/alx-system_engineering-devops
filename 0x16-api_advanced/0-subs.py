@@ -5,6 +5,7 @@ Script that queries the number of subscribers on a given Reddit subreddit.
 
 import requests
 
+
 def number_of_subscribers(subreddit):
     """
     Return the total number of subscribers on a given subreddit.
@@ -15,7 +16,7 @@ def number_of_subscribers(subreddit):
     url = "https://www.reddit.com/r/{}/about.json".format(subreddit)
 
     # Using a Chrome-like User-Agent
-    headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36"}
+    headers = {"User-Agent": "Mozilla/5.0"}
 
     response = requests.get(url, headers=headers, allow_redirects=False)
 
