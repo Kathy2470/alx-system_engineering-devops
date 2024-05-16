@@ -12,8 +12,8 @@ exec { 'fix-ulimit-for-nginx':
 
 # Restart nginx
 exec { 'nginx-restart':
-  command => '/etc/init.d/nginx restart',
-  path    => '/sbin:/bin:/usr/sbin:/usr/bin',
+  command     => '/etc/init.d/nginx restart',
+  path        => '/sbin:/bin:/usr/sbin:/usr/bin',
   # Only run this command if notified by fix-ulimit-for-nginx
   refreshonly => true,
 }
